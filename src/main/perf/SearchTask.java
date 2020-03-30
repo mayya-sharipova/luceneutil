@@ -30,6 +30,7 @@ import org.apache.lucene.facet.taxonomy.FastTaxonomyFacetCounts;
 import org.apache.lucene.search.Collector;
 import org.apache.lucene.search.FieldDoc;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.TopFieldCollector;
 import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
@@ -255,6 +256,10 @@ final class SearchTask extends Task {
           hilite(hits, state, searcher, q);
         }
       } else {
+        final TopFieldCollector c = TopFieldCollector.create(s, topN, null, topN);
+        searcher.search(q, c);
+        hits = c.topDocs();
+        /**
         hits = searcher.search(q, topN, s);
         if (doHilite) {
           hilite(hits, state, searcher, q);
